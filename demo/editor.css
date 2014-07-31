@@ -1,0 +1,56 @@
+/* required styles START */
+/* the following styles are required for the editor to work properly; do NOT change them! */
+
+.editing {
+    width: 100%;
+    resize: none;
+    outline: none;
+}
+
+.dragover {
+    position: relative;
+}
+
+.dragover:after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    z-index: 99;
+}
+
+/* required styles END */
+
+*,
+*:before,
+*:after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+#editor {
+    height: 100%;
+    padding: 20px;
+}
+
+.editing {
+    border: 1px dashed #c7c7c7;
+}
+
+.dragover:after {
+    background-color: rgba(255, 0, 0, .33);
+}
+
+/* temporary styles for usability testing */
+#editor p {
+    padding-bottom: 1em;
+}
+
+#editor li ul {
+    margin-left: 1em;
+}

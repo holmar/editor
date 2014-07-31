@@ -2,6 +2,15 @@
  * marked - a markdown parser
  * Copyright (c) 2011-2014, Christopher Jeffrey. (MIT Licensed)
  * https://github.com/chjj/marked
+ *
+ * MODIFIED FOR EDITOR by @holmar
+ * https://github.com/holmar/editor
+ * 
+ * Changes made:
+ * Most block lexer tokens (namely: code, blockquote, heading, hr, list, paragraph) were given an 
+ * additional parameter `raw` which stores the raw text that creates the element. The parameter is
+ * then used in the renderer methods of the respective blocks if the option `addRaw`is set to 
+ * true (default is false).
  */
 
 ;(function() {
@@ -177,7 +186,8 @@ Lexer.prototype.token = function(src, top, bq) {
         type: 'code',
         text: !this.options.pedantic
           ? cap.replace(/\n+$/, '')
-          : cap
+          : cap,
+        raw: '    ' + cap.replace(/\n+$/, '')
       });
       continue;
     }
@@ -199,7 +209,8 @@ Lexer.prototype.token = function(src, top, bq) {
       this.tokens.push({
         type: 'heading',
         depth: cap[1].length,
-        text: cap[2]
+        text: cap[2],
+        raw: cap[0].replace(/\n+$/, '')
       });
       continue;
     }
@@ -242,7 +253,8 @@ Lexer.prototype.token = function(src, top, bq) {
       this.tokens.push({
         type: 'heading',
         depth: cap[2] === '=' ? 1 : 2,
-        text: cap[1]
+        text: cap[1],
+        raw: cap[0].replace(/\n+$/, '')
       });
       continue;
     }
@@ -251,7 +263,8 @@ Lexer.prototype.token = function(src, top, bq) {
     if (cap = this.rules.hr.exec(src)) {
       src = src.substring(cap[0].length);
       this.tokens.push({
-        type: 'hr'
+        type: 'hr',
+        raw: cap[0].replace(/\n+$/, '')
       });
       continue;
     }
@@ -259,9 +272,10 @@ Lexer.prototype.token = function(src, top, bq) {
     // blockquote
     if (cap = this.rules.blockquote.exec(src)) {
       src = src.substring(cap[0].length);
-
+        
       this.tokens.push({
-        type: 'blockquote_start'
+        type: 'blockquote_start',
+        raw: cap[0].replace(/\n+$/, '')
       });
 
       cap = cap[0].replace(/^ *> ?/gm, '');
@@ -285,7 +299,8 @@ Lexer.prototype.token = function(src, top, bq) {
 
       this.tokens.push({
         type: 'list_start',
-        ordered: bull.length > 1
+        ordered: bull.length > 1,
+        raw: cap[0].replace(/\n+$/, '')
       });
 
       // Get each top-level item.
@@ -416,7 +431,8 @@ Lexer.prototype.token = function(src, top, bq) {
         type: 'paragraph',
         text: cap[1].charAt(cap[1].length - 1) === '\n'
           ? cap[1].slice(0, -1)
-          : cap[1]
+          : cap[1],
+        raw: cap[0].replace(/\n+$/, '')
       });
       continue;
     }
@@ -754,7 +770,7 @@ function Renderer(options) {
   this.options = options || {};
 }
 
-Renderer.prototype.code = function(code, lang, escaped) {
+Renderer.prototype.code = function(code, lang, escaped, raw) {
   if (this.options.highlight) {
     var out = this.options.highlight(code, lang);
     if (out != null && out !== code) {
@@ -764,7 +780,9 @@ Renderer.prototype.code = function(code, lang, escaped) {
   }
 
   if (!lang) {
-    return '<pre><code>'
+    return '<pre'
+      + (this.options.addRaw ? ' data-raw="' + raw + '"' : '')
+      + '><code>'
       + (escaped ? code : escape(code, true))
       + '\n</code></pre>';
   }
@@ -777,17 +795,18 @@ Renderer.prototype.code = function(code, lang, escaped) {
     + '\n</code></pre>\n';
 };
 
-Renderer.prototype.blockquote = function(quote) {
-  return '<blockquote>\n' + quote + '</blockquote>\n';
+Renderer.prototype.blockquote = function(quote, raw) {
+  return '<blockquote' + (this.options.addRaw ? ' data-raw="' + raw + '"' : '') + '>\n' + quote + '</blockquote>\n';
 };
 
 Renderer.prototype.html = function(html) {
   return html;
 };
 
-Renderer.prototype.heading = function(text, level, raw) {
+Renderer.prototype.heading = function(text, level, raw) {    
   return '<h'
     + level
+    + (this.options.addRaw ? ' data-raw="' + raw + '"' : '')
     + '>'
     + text
     + '</h'
@@ -795,21 +814,21 @@ Renderer.prototype.heading = function(text, level, raw) {
     + '>\n';
 };
 
-Renderer.prototype.hr = function() {
-  return this.options.xhtml ? '<hr/>\n' : '<hr>\n';
+Renderer.prototype.hr = function(raw) {
+  return this.options.xhtml ? '<hr' + (this.options.addRaw ? ' data-raw="' + raw + '"' : '') + '/>\n' : '<hr' + (this.options.addRaw ? ' data-raw="' + raw + '"' : '') + '>\n';
 };
 
-Renderer.prototype.list = function(body, ordered) {
+Renderer.prototype.list = function(body, ordered, raw) {
   var type = ordered ? 'ol' : 'ul';
-  return '<' + type + '>\n' + body + '</' + type + '>\n';
+  return '<' + type + (this.options.addRaw ? ' data-raw="' + raw + '"' : '') + '>\n' + body + '</' + type + '>\n';
 };
 
 Renderer.prototype.listitem = function(text) {
   return '<li>' + text + '</li>\n';
 };
 
-Renderer.prototype.paragraph = function(text) {
-  return '<p>' + text + '</p>\n';
+Renderer.prototype.paragraph = function(text, raw) {
+  return '<p' + (this.options.addRaw ? ' data-raw="' + raw + '"' : '') + '>' + text + '</p>\n';
 };
 
 Renderer.prototype.table = function(header, body) {
@@ -964,18 +983,19 @@ Parser.prototype.tok = function() {
       return '';
     }
     case 'hr': {
-      return this.renderer.hr();
+      return this.renderer.hr(this.token.raw);
     }
     case 'heading': {
       return this.renderer.heading(
         this.inline.output(this.token.text),
         this.token.depth,
-        this.token.text);
+        this.token.raw);
     }
     case 'code': {
       return this.renderer.code(this.token.text,
         this.token.lang,
-        this.token.escaped);
+        this.token.escaped,
+        this.token.raw);
     }
     case 'table': {
       var header = ''
@@ -1013,23 +1033,25 @@ Parser.prototype.tok = function() {
       return this.renderer.table(header, body);
     }
     case 'blockquote_start': {
-      var body = '';
+      var body = ''
+        , raw = this.token.raw;
 
       while (this.next().type !== 'blockquote_end') {
         body += this.tok();
       }
 
-      return this.renderer.blockquote(body);
+      return this.renderer.blockquote(body, raw);
     }
     case 'list_start': {
       var body = ''
-        , ordered = this.token.ordered;
+        , ordered = this.token.ordered
+        , raw = this.token.raw;
 
       while (this.next().type !== 'list_end') {
         body += this.tok();
       }
 
-      return this.renderer.list(body, ordered);
+      return this.renderer.list(body, ordered, raw);
     }
     case 'list_item_start': {
       var body = '';
@@ -1058,7 +1080,7 @@ Parser.prototype.tok = function() {
       return this.renderer.html(html);
     }
     case 'paragraph': {
-      return this.renderer.paragraph(this.inline.output(this.token.text));
+      return this.renderer.paragraph(this.inline.output(this.token.text), this.token.raw);
     }
     case 'text': {
       return this.renderer.paragraph(this.parseText());
@@ -1236,7 +1258,8 @@ marked.defaults = {
   smartypants: false,
   headerPrefix: '',
   renderer: new Renderer,
-  xhtml: false
+  xhtml: false,
+  addRaw: false
 };
 
 /**
