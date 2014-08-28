@@ -1,11 +1,12 @@
 /*global marked*/
+
 /**
- * EDITOR by @holmar
- * https://github.com/holmar/editor
- * Dependencies: editor.marked.js (a slightly modified version of marked.js – https://github.com/chjj/marked)
+ * Mark by @holmar
+ * https://github.com/holmar/mark
+ * Dependencies: mark.marked.js (a slightly modified version of marked.js – https://github.com/chjj/marked)
  */
 
-var EDITOR = (function (marked, window, document) {
+var Mark = (function (marked, window, document) {
     'use strict';
 
     var History,
@@ -20,7 +21,7 @@ var EDITOR = (function (marked, window, document) {
         getText,
         getHTML,
         init,
-        coreElement;
+        container;
 
     History = (function () {
         var MAX_STATES = 5,
@@ -30,16 +31,20 @@ var EDITOR = (function (marked, window, document) {
             push,
             move;
 
+        /**
+         * push() adds a history state if the content has changed since the last state was added
+         * @return <Boolean> (true if a state was added, else false)
+         */
         push = function () {
             var text = getText(),
                 textarea;
-
+            
             // if changes were made since the last state, push a new state
             if (!states[current] || states[current].text !== text) {
 
-                textarea = coreElement.getElementsByTagName('textarea')[0];
+                textarea = container.getElementsByTagName('textarea')[0];
 
-                // remove all states beyond the `currentState` (this allows overwriting history states after undo/redo was used)
+                // remove all states beyond the `current` state (this allows overwriting history states after undo/redo was used)
                 states.splice(current + 1);
 
                 states.push({
@@ -58,42 +63,45 @@ var EDITOR = (function (marked, window, document) {
 
                 current = states.length - 1;
                 locked = false;
+                
+                return true;
+            } else {
+                return false;
             }
         };
 
+        /**
+         * move() reverts to the history state before or after the current state (depending on the `direction` argument)
+         * @param <String> (either `forward` to go one step forward or `back` to go one step back)
+         */
         move = function (direction) {
             if (direction === 'forward' && current < states.length - 1) {
                 current++;
-            }
-
-            if (direction === 'back' && current) {
+            } else if (direction === 'back' && current) {
                 current--;
             }
 
             var blocks = convert(states[current].text),
-                i = blocks.length,
-                lastElement;
+                len = blocks.length,
+                i;
 
-            // clear `coreElement`
-            while (coreElement.firstChild) {
-                coreElement.removeChild(coreElement.firstChild);
+            // clear `container`
+            while (container.firstChild) {
+                container.removeChild(container.firstChild);
             }
 
             // insert all blocks
-            while (i--) {
-                if (blocks[i].getAttribute('data-raw') === '<br>') {
-                    blocks[i].setAttribute('data-raw', '');
-                }
-
+            for (i = 0; i < len; i++) {
                 if (i === states[current].textarea.index) {
-                    newline(blocks[i].getAttribute('data-raw'), lastElement).setSelectionRange(states[current].textarea.startOffset, states[current].textarea.endOffset);
+                    newline((blocks[i].getAttribute('data-raw') !== '<br>') ? blocks[i].getAttribute('data-raw') : '').setSelectionRange(states[current].textarea.startOffset, states[current].textarea.endOffset);
                 } else {
-                    lastElement = coreElement.insertBefore(blocks[i], coreElement.firstChild);
+                    container.appendChild(blocks[i]);
                 }
             }
         };
 
         return {
+            states: states,
             push: push,
             back: function () {
                 return move('back');
@@ -116,7 +124,7 @@ var EDITOR = (function (marked, window, document) {
     /**
      * getCaretPosition() returns the current caret position (`startOffset` and `endOffset`) in a formatted block
      * @param <HTMLElement> block (does not have to be editable)
-     * @return <Object> {<Number> startOffset, <Number> endOffset, <Boolean> collapsed}
+     * @return <Object> { <Number> startOffset, <Number> endOffset, <Boolean> collapsed }
      */
     getCaretPosition = function (block) {
         var sel = window.getSelection(),
@@ -140,9 +148,8 @@ var EDITOR = (function (marked, window, document) {
         // count and the selected characters; some blocks (<ul>, <ol>, <blockquote>) contain unwanted line breaks that need to be stripped
         startOffset = rangeClone.toString().replace(/\n/g, '').length;
 
+        // if the user made a selection, repeat the process for the end offset
         if (!range.collapsed) {
-
-            // if the user made a selection, repeat the process for the end offset
             rangeClone.selectNodeContents(block);
             rangeClone.setEnd(range.endContainer, range.endOffset);
             endOffset = rangeClone.toString().replace(/\n/g, '').length;
@@ -170,7 +177,7 @@ var EDITOR = (function (marked, window, document) {
     getCharIndex = function (long, short, index) {
         var i, j;
 
-        // avoid an infinite loop
+        // avoid infinite loop
         if (index > short.length || index === undefined) {
             index = short.length;
         }
@@ -188,7 +195,7 @@ var EDITOR = (function (marked, window, document) {
     };
 
     /**
-     * mergeBlocks() moves all elements from `secondBlock` to `firstBlock` and deletes `secondBlock`
+     * mergeBlocks() moves all children from `secondBlock` to `firstBlock` and deletes `secondBlock`
      * @param <HTMLElement> firstBlock
      * @param <HTMLElement> secondBlock
      * @return <HTMLElement> || <Boolean> (`firstBlock` on success, otherwise false)
@@ -233,7 +240,7 @@ var EDITOR = (function (marked, window, document) {
     };
 
     /**
-     * newline() inserts a newline (empty or filled with `text`) either after a given element (`after`), after the currently focused element or at the end of `coreElement`
+     * newline() inserts a newline (empty or filled with `text`) either after a given element (`after`), after the currently focused element or at the end of `container`
      * @param <String> text (optional)
      * @param <HTMLElement> after (optional)
      * @return <HTMLElement>
@@ -255,11 +262,16 @@ var EDITOR = (function (marked, window, document) {
         } else if (document.activeElement.tagName === 'TEXTAREA') {
             document.activeElement.parentNode.insertBefore(textarea, document.activeElement.nextSibling);
         } else {
-            coreElement.appendChild(textarea);
+            container.appendChild(textarea);
         }
 
         textarea.className = 'editing';
         textarea.focus();
+        
+        // create the first history entry
+        if (!History.states.length) {
+            History.push();
+        }
 
         return setRows(textarea);
     };
@@ -267,20 +279,19 @@ var EDITOR = (function (marked, window, document) {
     /**
      * convert() uses marked.js to convert a (Markdown-formatted) text to HTML; returns an array of HTMLElements
      * @param <String> text
-     * @return <Array> [<HTMLElement>]
+     * @return <Array> [ <HTMLElement>, ... ]
      */
     convert = function (text) {
-        var container = document.createElement('div');
+        var wrapper = document.createElement('div');
 
-        // convert the text and append it to the contianer
-        container.innerHTML = marked(text, { breaks: true, addRaw: true });
+        wrapper.innerHTML = marked(text, { breaks: true, addRaw: true });
 
         // if nothing was converted, add an empty paragraph
-        if (!container.firstChild) {
-            container.innerHTML = '<p data-raw=""><br></p>';
+        if (!wrapper.firstChild) {
+            wrapper.innerHTML = '<p data-raw="<br>"><br></p>';
         }
 
-        return [].slice.call(container.children);
+        return [].slice.call(wrapper.children);
     };
 
     /**
@@ -295,19 +306,18 @@ var EDITOR = (function (marked, window, document) {
             return;
         }
 
-        // save the current unrendered state
-        History.push();
-
         var blocks = convert(textarea.value),
             i = blocks.length,
             lastElement;
+        
+        // save the unrendered state
+        History.push();
 
-        // if necessary, merge the first block with the previous block
+        // merge blocks if necessary
         if (textarea.previousSibling) {
             lastElement = mergeBlocks(blocks[0], textarea.previousSibling);
         }
-
-        // if necessary, merge the last block with the next block
+        
         if (textarea.nextSibling) {
             lastElement = mergeBlocks(textarea.nextSibling, blocks[blocks.length - 1]);
         }
@@ -324,7 +334,7 @@ var EDITOR = (function (marked, window, document) {
     };
 
     /**
-     * unrender() converts a given block (i.e. an HTML element) to a textarea and sets its value to the original text that was saved as a data-attribute; returns the textarea
+     * unrender() converts a given block (i.e. an HTML element) to a textarea and sets its value to the original text stored as a data-attribute; returns the textarea
      * @param <HTMLElement> block
      * @return <HTMLElement>
      */
@@ -339,29 +349,34 @@ var EDITOR = (function (marked, window, document) {
             rawText = block.getAttribute('data-raw'),
             caretPosition = getCaretPosition(block),
             textarea;
-
+        
+        if (rawText === '<br>') {
+            rawText = '';
+        }
+        
         // calculate the target caret position (`rawText` includes Markdown characters and is usually not the same as `text`)
         caretPosition.startOffset = getCharIndex(rawText, text, caretPosition.startOffset);
         caretPosition.endOffset = caretPosition.collapsed ? caretPosition.startOffset : getCharIndex(rawText, text, caretPosition.endOffset);
 
         // replace the element and restore the caret
-        textarea = newline(rawText, block).setSelectionRange(caretPosition.startOffset, caretPosition.endOffset);
+        textarea = newline(rawText, block);
+        textarea.setSelectionRange(caretPosition.startOffset, caretPosition.endOffset);
         block.parentNode.removeChild(block);
 
         return textarea;
     };
 
     /**
-     * getText() returns all raw text as a single string
+     * getText() returns the file's contents as a single string
      * @return <String>
      */
     getText = function () {
         var text = '',
-            len = coreElement.children.length,
+            len = container.children.length,
             i;
 
         for (i = 0; i < len; i++) {
-            text += coreElement.children[i].getAttribute('data-raw') || coreElement.children[i].value || '<br>';
+            text += container.children[i].getAttribute('data-raw') || container.children[i].value || '<br>';
 
             if (i < len - 1) {
                 text += '\n\n';
@@ -372,7 +387,7 @@ var EDITOR = (function (marked, window, document) {
     };
 
     /**
-     * getHTML() converts all raw text to HTML and returns the result as a string
+     * getHTML() returns the file's contents as HTML
      * @return <String>
      */
     getHTML = function () {
@@ -380,30 +395,16 @@ var EDITOR = (function (marked, window, document) {
     };
 
     /**
-     * init() sets up all event listeners for the editor and, if no element is supplied, inserts the main element (`coreElement`) into the DOM; returns `coreElement`
-     * @param <HTMLElement> elem (optional)
+     * init() sets up all event listeners for the editor; requires a target element
+     * @param <HTMLElement> element
      * @return <HTMLElement>
      */
-    init = function (elem) {
+    init = function (element) {
 
-        // temp is used to share data between event handlers or store other temporary information
+        // temp is used to share data between event handlers and to store other temporary information
         var temp;
 
-        // set up `coreElement`; if no target was supplied, create one
-        if (!elem) {
-            coreElement = document.createElement('div');
-            coreElement.id = 'editor';
-            document.body.appendChild(coreElement);
-        } else {
-            coreElement = elem;
-        }
-
-        // save `coreElement` as a property for outside reference
-        EDITOR.coreElement = coreElement;
-
-        // create the first line
-        newline();
-        History.push();
+        container = element;
 
         // set up the event listeners
         window.addEventListener('keydown', function (e) {
@@ -422,7 +423,7 @@ var EDITOR = (function (marked, window, document) {
             }
         }, false);
 
-        coreElement.addEventListener('keydown', function (e) {
+        container.addEventListener('keydown', function (e) {
             switch (e.keyCode) {
             case 13:
                 if (!e.shiftKey) {
@@ -433,15 +434,14 @@ var EDITOR = (function (marked, window, document) {
                     if (e.target.selectionStart !== e.target.value.length) {
 
                         // if the caret is not at the end of the textarea, split the text
-                        temp = e.target.value.substr(e.target.selectionStart);
-                        e.target.value = e.target.value.substr(0, e.target.selectionStart);
+                        temp = e.target.value.substring(e.target.selectionStart);
+                        e.target.value = e.target.value.substring(0, e.target.selectionStart);
                     } else {
                         temp = '';
                     }
 
-                    // rendering needs to happen before inserting a newline, so that the history works as expected (`render()` pushes a new history state)
-                    render(e.target);
-                    newline(temp);
+                    // rendering needs to happen before inserting a newline, so that the history works as expected
+                    newline(temp, render(e.target));
                 }
                 break;
             case 46:
@@ -454,7 +454,7 @@ var EDITOR = (function (marked, window, document) {
                     History.unlock();
 
                     // append the contents of the textarea to the previous block
-                    e.target.previousSibling.setAttribute('data-raw', e.target.previousSibling.getAttribute('data-raw') + e.target.value);
+                    e.target.previousSibling.setAttribute('data-raw', e.target.previousSibling.getAttribute('data-raw').replace(/<br>/, '') + e.target.value);
 
                     this.removeChild(unrender(e.target.previousSibling).nextSibling);
                 } else if (!History.isLocked()) {
@@ -495,33 +495,34 @@ var EDITOR = (function (marked, window, document) {
         }, false);
 
         // the mousedown- and mouseup-target does not have to be the same element (i.e. when text was selected), so save this target for the mouseup handler
-        coreElement.addEventListener('mousedown', function (e) {
+        container.addEventListener('mousedown', function (e) {
             temp = e.target;
         }, false);
 
         // mouseup is used here in favor of click, because click doesn't trigger when a selection is made
-        coreElement.addEventListener('mouseup', function (e) {
-            var target = (temp === this) ? e.target : temp,
+        container.addEventListener('mouseup', function (e) {
+            var that = this,
+                target = (temp === that) ? e.target : temp,
                 textarea,
                 block;
 
-            if (target.tagName === 'TEXTAREA') {
+            if (!target || target.tagName === 'TEXTAREA') {
                 return;
             }
-
+            
             // if there is a textarea, render it
-            textarea = this.getElementsByTagName('textarea')[0];
+            textarea = that.getElementsByTagName('textarea')[0];
             if (textarea) {
                 render(textarea);
             }
 
             // unrender the block that was clicked
-            if (target !== this && target.tagName !== 'A') {
+            if (target !== that && target.tagName !== 'A') {
 
                 // find the block (e.target might be a nested element)
                 block = target;
 
-                while (block.parentNode !== this) {
+                while (block.parentNode !== that) {
                     block = block.parentNode;
                 }
 
@@ -529,55 +530,12 @@ var EDITOR = (function (marked, window, document) {
             }
 
             // when the user clicks outside any block and no block is being edited, unrender the last block
-            if (target === this && !textarea) {
-                unrender(this.lastChild);
+            if (target === that && !textarea && that.lastChild) {
+                unrender(that.lastChild);
             }
         }, false);
 
-        coreElement.addEventListener('dragover', function (e) {
-            e.preventDefault();
-        }, false);
-
-        coreElement.addEventListener('dragenter', function () {
-
-            // this requires specific CSS to work (see editor.css)
-            this.className = 'dragover';
-        }, false);
-
-        coreElement.addEventListener('dragleave', function (e) {
-            if (e.target === this) {
-                this.className = '';
-            }
-        }, false);
-
-        coreElement.addEventListener('drop', function (e) {
-            e.preventDefault();
-
-            var text = e.dataTransfer.getData('URL') || e.dataTransfer.getData('TEXT'),
-                target = this.getElementsByTagName('TEXTAREA')[0] || this,
-                extension;
-
-            if (text) {
-                extension = text.split('.').pop().toUpperCase();
-
-                // if an image was dropped, create the respective Markdown representation of it
-                if (extension === 'BMP' || extension === 'GIF' || extension === 'JPG' || extension === 'JPEG' || extension === 'PNG' || extension === 'SVG') {
-                    text = '![](' + text + ')';
-                }
-
-                History.push();
-
-                if (target.tagName === 'TEXTAREA') {
-                    target.value += text;
-                } else {
-                    target.appendChild(convert(text)[0]);
-                }
-            }
-
-            this.className = '';
-        }, false);
-
-        return coreElement;
+        return container;
     };
 
     // exports
@@ -586,6 +544,7 @@ var EDITOR = (function (marked, window, document) {
         getText: getText,
         getHTML: getHTML,
         init: init,
+        newline: newline,
         render: render,
         unrender: unrender
     };

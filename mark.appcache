@@ -1,0 +1,33 @@
+CACHE MANIFEST
+# v1.3.0
+
+# Core files
+index.html
+css/styles.min.css
+js/mark.marked.min.js
+js/mark.min.js
+js/index.min.js
+js/html2canvas.min.js
+js/jspdf.min.js
+languages/languages.json
+themes/themes.json
+
+# Images
+img/arrow_8x12.svg
+img/arrows.png
+img/close_10x10.svg
+img/drag-drop.gif
+img/favicon.ico
+img/gradient.png
+img/logo.png
+img/network_19x16.svg
+img/search_13x13.svg
+
+# Default language & theme
+languages/en.json
+themes/default-theme/theme.css
+themes/default-theme/preview.png
+
+NETWORK:
+*
+http://*

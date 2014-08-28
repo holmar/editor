@@ -3,8 +3,8 @@
  * Copyright (c) 2011-2014, Christopher Jeffrey. (MIT Licensed)
  * https://github.com/chjj/marked
  *
- * MODIFIED FOR EDITOR by @holmar
- * https://github.com/holmar/editor
+ * MODIFIED FOR MARK by @holmar
+ * https://github.com/holmar/mark
  * 
  * Changes made:
  * Most block lexer tokens (namely: code, blockquote, heading, hr, list, paragraph) were given an 
@@ -187,7 +187,7 @@ Lexer.prototype.token = function(src, top, bq) {
         text: !this.options.pedantic
           ? cap.replace(/\n+$/, '')
           : cap,
-        raw: '    ' + cap.replace(/\n+$/, '')
+        raw: '    ' + cap.replace(/"/g, '&quot;').replace(/\n+$/, '')
       });
       continue;
     }
@@ -198,7 +198,8 @@ Lexer.prototype.token = function(src, top, bq) {
       this.tokens.push({
         type: 'code',
         lang: cap[2],
-        text: cap[3]
+        text: cap[3],
+        raw: cap[0].replace(/"/g, '&quot;').replace(/\n+$/, '')
       });
       continue;
     }
@@ -210,7 +211,7 @@ Lexer.prototype.token = function(src, top, bq) {
         type: 'heading',
         depth: cap[1].length,
         text: cap[2],
-        raw: cap[0].replace(/\n+$/, '')
+        raw: cap[0].replace(/"/g, '&quot;').replace(/\n+$/, '')
       });
       continue;
     }
@@ -254,7 +255,7 @@ Lexer.prototype.token = function(src, top, bq) {
         type: 'heading',
         depth: cap[2] === '=' ? 1 : 2,
         text: cap[1],
-        raw: cap[0].replace(/\n+$/, '')
+        raw: cap[0].replace(/"/g, '&quot;').replace(/\n+$/, '')
       });
       continue;
     }
@@ -275,7 +276,7 @@ Lexer.prototype.token = function(src, top, bq) {
         
       this.tokens.push({
         type: 'blockquote_start',
-        raw: cap[0].replace(/\n+$/, '')
+        raw: cap[0].replace(/"/g, '&quot;').replace(/\n+$/, '')
       });
 
       cap = cap[0].replace(/^ *> ?/gm, '');
@@ -300,7 +301,7 @@ Lexer.prototype.token = function(src, top, bq) {
       this.tokens.push({
         type: 'list_start',
         ordered: bull.length > 1,
-        raw: cap[0].replace(/\n+$/, '')
+        raw: cap[0].replace(/"/g, '&quot;').replace(/\n+$/, '')
       });
 
       // Get each top-level item.
@@ -432,7 +433,7 @@ Lexer.prototype.token = function(src, top, bq) {
         text: cap[1].charAt(cap[1].length - 1) === '\n'
           ? cap[1].slice(0, -1)
           : cap[1],
-        raw: cap[0].replace(/\n+$/, '')
+        raw: cap[0].replace(/"/g, '&quot;').replace(/\n+$/, '')
       });
       continue;
     }
@@ -787,7 +788,9 @@ Renderer.prototype.code = function(code, lang, escaped, raw) {
       + '\n</code></pre>';
   }
 
-  return '<pre><code class="'
+  return '<pre'
+    + (this.options.addRaw ? ' data-raw="' + raw + '"' : '')
+    + '><code class="'
     + this.options.langPrefix
     + escape(lang, true)
     + '">'

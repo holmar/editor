@@ -1,0 +1,14 @@
+[
+    {
+        "name": "English",
+        "identifiers": ["en", "en-us", "en-gb", "en-ca"],
+        "dictionary": "en_US",
+        "file": "languages/en.json"
+    },
+    {
+        "name": "Deutsch",
+        "identifiers": ["de", "de-de"],
+        "dictionary": "de_DE",
+        "file": "languages/de.json"
+    }
+]

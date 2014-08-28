@@ -1,0 +1,12 @@
+[
+    {
+        "name": "Default Theme",
+        "fonts": [
+            "Source Sans Pro",
+            "Tinos",
+            "sans"
+        ],
+        "ui": "dark",
+        "folder": "themes/default-theme/"
+    }
+]
