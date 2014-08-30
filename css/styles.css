@@ -35,7 +35,7 @@ body {
 
 .scroll {
     overflow-x: hidden;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .no-scroll {
@@ -153,6 +153,7 @@ button {
     border: 1px dashed #1f1d1b;
     background-color: transparent;
     font: 0.8125rem "Source Code Pro", monospace;
+    overflow: hidden;
     resize: none;
     outline: none;
 }
@@ -282,12 +283,7 @@ button {
 }
 
 /* display an icon for online-only elements when the client is offline */
-.offline .online-only {
-    position: relative;
-    color: #5f5959;
-}
-
-.offline .online-only:after {
+.online-only:after {
     content: "";
     display: block;
     width: 19px;
@@ -295,7 +291,18 @@ button {
     background-image: url("../img/network_19x16.svg");
     position: absolute;
     top: 18px; right: 20px;
+    visibility: hidden;
 }
+
+.offline .online-only {
+    position: relative;
+    color: #5f5959;
+}
+
+.offline .online-only:after {
+    visibility: visible;
+}
+
 
 /* hide all but the first and active theme when the client is offline */
 .offline .menu__list--themes li:not(:first-child):not(.active-theme) {

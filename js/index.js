@@ -792,7 +792,7 @@
                     text: l18n('export-text'),
                     clickHandler: function () {
                         fileExport('txt');
-                        fileNew(l18n('create-a-custom-themen-text'));
+                        fileNew(l18n('create-a-custom-theme-text'));
                     },
                     className: 'button--active'
                 }
@@ -836,13 +836,17 @@
 
     // open file via drop
     document.addEventListener('dragover', function (e) {
-        e.preventDefault();
+        if (e.target.tagName !== 'TEXTAREA') {
+            e.preventDefault();
+        }
     }, false);
 
-    document.addEventListener('dragenter', function () {
-
-        // this requires specific CSS in order to work (i.e. a full-size pseudo-element positioned on top of `container`)
-        addClass(container, 'dragover');
+    document.addEventListener('dragenter', function (e) {
+        if (e.target.tagName !== 'TEXTAREA') {
+            
+            // this requires specific CSS in order to work (i.e. a full-size pseudo-element positioned on top of `container`)
+            addClass(container, 'dragover');
+        }
     }, false);
 
     document.addEventListener('dragleave', function (e) {
@@ -852,35 +856,37 @@
     }, false);
 
     document.addEventListener('drop', function (e) {
-        e.preventDefault();
-        
-        var extension, target, text;
-        
-        // if a file was dropped, open it
-        if (e.dataTransfer.files[0]) {
-            fileOpen(e.dataTransfer.files[0]);
-            
-        // else (a text or an image was dropped) append the content
-        } else {
-            text = e.dataTransfer.getData('URL') || e.dataTransfer.getData('TEXT');
-            target = container.getElementsByTagName('TEXTAREA')[0] || container;
+        if (e.target.tagName !== 'TEXTAREA') {
+            e.preventDefault();
 
-            if (text) {
-                extension = text.split('.').pop().toUpperCase();
+            var extension, target, text;
 
-                if (extension === 'BMP' || extension === 'GIF' || extension === 'JPG' || extension === 'JPEG' || extension === 'PNG' || extension === 'SVG') {
-                    text = '![](' + text + ')';
-                }
+            // if a file was dropped, open it
+            if (e.dataTransfer.files[0]) {
+                fileOpen(e.dataTransfer.files[0]);
 
-                if (target.tagName === 'TEXTAREA') {
-                    target.value += text;
-                } else {
-                    Mark.newline(text);
+            // else (a text or an image was dropped) append the content
+            } else {
+                text = e.dataTransfer.getData('URL') || e.dataTransfer.getData('TEXT');
+                target = container.getElementsByTagName('TEXTAREA')[0] || container;
+
+                if (text) {
+                    extension = text.split('.').pop().toUpperCase();
+
+                    if (extension === 'BMP' || extension === 'GIF' || extension === 'JPG' || extension === 'JPEG' || extension === 'PNG' || extension === 'SVG') {
+                        text = '![](' + text + ')';
+                    }
+
+                    if (target.tagName === 'TEXTAREA') {
+                        target.value += text;
+                    } else {
+                        Mark.newline(text);
+                    }
                 }
             }
+
+            removeClass(container, 'dragover');
         }
-        
-        removeClass(container, 'dragover');
     }, false);
 
     // show the synonyms tooltip when a word is selected
