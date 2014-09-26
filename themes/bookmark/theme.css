@@ -1,0 +1,276 @@
+/**
+ * Theme name: BookMark
+ * Designer: @holmar
+ * Author: @holmar
+ * Fonts: Source Sans Pro, Tinos, Source Code Pro
+ * Version: 1.1
+ */
+
+@import url("http://fonts.googleapis.com/css?family=Source+Sans+Pro:300|Tinos:400,700");
+
+#mark ::-moz-selection {
+    background-color: #1f1d1b;
+    color: #fff;
+}
+
+#mark ::selection {
+    background-color: #1f1d1b;
+    color: #fff;
+}
+
+#mark {
+    background-color: #fcfcfa;
+    padding: 6.25rem 1.25rem;
+}
+
+#mark > * {
+    max-width: 40.625rem;
+    margin: 0 auto;
+}
+
+#mark h1,
+#mark h2,
+#mark h3,
+#mark h4,
+#mark h5,
+#mark h6,
+#mark a,
+#mark strong,
+#mark em,
+#mark blockquote p,
+#mark li:after {
+    font-family: "Tinos", serif;
+}
+
+#mark h1,
+#mark h3,
+#mark a,
+#mark strong {
+    font-weight: 600;
+}
+
+#mark h1,
+#mark h2,
+#mark h3 {
+    text-rendering: optimizeLegibility;
+}
+
+#mark h1:after,
+#mark hr:after {
+    content: "";
+    display: block;
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MiAxOCI+PHBhdGggZD0iTTgxLjUsNi45Qzc4LjYtMSw2NC45LTEuNSw1NC42LDIuM2MtNS0yLjQtMTMuMS0xLjYtMTYuOC0wLjFMMjAuNiw5LjJDOS4yLDE0LjMsNS43LDEwLjksNS43LDYuOWMwLTQsMy44LTUuOSw2LjktNS45DQoJYzIuNiwwLDQuNSwxLjIsNC43LDMuN2MwLjIsMi4zLTIuNSwzLjgtNS41LDEuN2MyLjksMi42LDYuMiwwLjgsNi4xLTEuN2MtMC4xLTEuNi0xLTMuOS01LjMtNEM1LjEsMC44LDMuNCw3LDUuOSwxMC4zDQoJYzIuOSwzLjksMTAuNywyLjksMTQuNiwxLjJsMTguMy04YzUuMS0yLjEsMTAuNi0yLjMsMTQuNC0wLjdMMjYuNSwxMy4yQzIwLjMsMTUuNiwyLDIxLjEsMC4xLDcuNGMtMC45LDcsNi43LDE1LjksMzAuNyw2LjVsMjMtOS4yDQoJYzAuNS0wLjIsMS0wLjQsMS41LTAuNmMwLjYsMC40LDEsMSwxLjQsMS41YzIuNyw0LjEsMSw3LjktMy40LDguN2MzLjcsMC40LDcuOC00LjYsNC4xLTkuN0M1Ny4zLDQuMyw1Nyw0LDU2LjcsMy43DQoJYzcuOS0yLjUsMjEuNS00LjQsMjMuOSw0LjhjMSw1LjUtNi40LDExLjQtMTYuMSw1LjlDNzIsMjAuOCw4NC43LDE1LjYsODEuNSw2Ljl6Ij48L3BhdGg+PC9zdmc+);
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+#mark h3,
+#mark p,
+#mark > ul,
+#mark > ol {
+    padding-bottom: 1.3125rem;
+}
+
+#mark > p,
+#mark > ul,
+#mark > ol {
+    font: 300 1.3125em/1.45 "Source Sans Pro", sans-serif;
+}
+
+#mark em,
+#mark blockquote p {
+    text-transform: uppercase;
+    letter-spacing: .18em;
+}
+
+#mark textarea {
+    margin-bottom: 1.3125rem;
+}
+
+#mark h1 {
+    padding: 3.75rem 0;
+    font-size: 2.875em;
+    text-align: center;
+}
+
+#mark h1:after {
+    width: 5rem;
+    height: 1.125rem;
+    margin: .75rem auto 0;
+    background-size: 100%;
+}
+
+#mark h2 {
+    display: table;
+    padding: 3.75rem 0;
+    font-size: 2.125em;
+    font-weight: 400;
+    position: relative;
+}
+
+#mark h2:after {
+    content: "";
+    display: block;
+    height: 1px;
+    background-color: #000;
+    position: absolute;
+    right: 0; bottom: 3.45rem; left: 0;
+}
+
+#mark h3 {
+    font-size: 1.5625em;
+    padding-top: 2.5rem;
+}
+
+#mark h1:first-child,
+#mark h2:first-child,
+#mark h3:first-child,
+#mark h1 + h2,
+#mark h1 + h3,
+#mark h2 + h3,
+#mark h1 + blockquote,
+#mark h2 + blockquote,
+#mark h3 + blockquote {
+    padding-top: 0;
+    margin-top: 0;
+}
+
+#mark ul,
+#mark ol {
+    list-style: none;
+}
+
+#mark li {
+    padding-left: 2.5em;
+    font-size: .95em;
+    position: relative;
+}
+
+#mark ul li:after {
+    content: "›";
+    display: block;
+    font-size: 1.2em;
+    line-height: 1.2;
+    position: absolute;
+    top: 0; left: 0;
+}
+
+#mark > ul > li:after {
+    content: "»";
+}
+
+#mark ol {
+    counter-reset: c;
+}
+
+#mark ol li {
+    counter-increment: c;
+}
+
+#mark ol li:after {
+    content: counter(c);
+    display: block;
+    width: 1.375rem;
+    height: 1.375rem;
+    border: 1px solid #000;
+    border-radius: 50%;
+    position: absolute;
+    top: .2rem; left: 0;
+    font-size: .7em;
+    font-weight: 600;
+    line-height: 1.6;
+    text-align: center;
+}
+
+#mark blockquote {
+    max-width: 500px;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+    text-align: center;
+    line-height: 1.66;
+}
+
+#mark a {
+    padding: 2px 0;
+    border-bottom: 1px dotted #000;
+    color: #000;
+    text-decoration: none;
+}
+
+#mark a:hover {
+    border-bottom-style: solid;
+}
+
+#mark del {
+    text-decoration: none;
+    position: relative;
+}
+
+#mark del:after {
+    content: "";
+    display: block;
+    height: 3px;
+    background-color: #ff3a3a;
+    position: absolute;
+    top: .6em; right: -2px; left: -2px;
+}
+
+#mark em {
+    margin-left: .3125rem;
+    margin-right: .1875rem;
+    font-size: .762em;
+    font-style: normal;
+}
+
+#mark p em:first-child, 
+#mark li em:first-child {
+    margin-left: 0;
+}
+
+#mark code {
+    margin: 0 6px;
+    background-color: #f4f4f2;
+    font: .715em/1.5 "Source Code Pro", monospace;
+}
+
+#mark pre {
+    padding: 6px 12px;
+    margin-bottom: 1em;
+    background-color: #f4f4f2;
+    font-size: 21px;
+    overflow: scroll;
+}
+
+#mark pre code {
+    margin: 0;
+}
+
+#mark hr {
+    height: 0;
+    border: none;
+    padding: 4rem 0 5rem;
+}
+
+#mark hr:before {
+    content: "";
+    display: block;
+    height: 1px;
+    background-color: #000;
+}
+
+#mark hr:after {
+    width: 5rem;
+    height: .875rem;
+    margin: 0 auto;
+    background-color: #fcfcfa;
+    background-size: 3.75rem;
+    position: relative;
+    top: -.4375rem;
+}
+
+#mark img {
+    display: block;
+    max-width: 100%;
+    padding: 1rem 0;
+    margin: 0 auto;
+}

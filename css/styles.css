@@ -148,11 +148,13 @@ button {
 }
 
 .editing {
+    display: block;
     width: 100%;
-    padding: 4px 8px;
+    padding: 3px 9px;
     border: 1px dashed #1f1d1b;
+    margin-bottom: 1em;
     background-color: transparent;
-    font: 0.8125rem "Source Code Pro", monospace;
+    font: 0.9375rem/1.4 "Source Code Pro", monospace;
     overflow: hidden;
     resize: none;
     outline: none;

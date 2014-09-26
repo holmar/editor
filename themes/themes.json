@@ -1,12 +1,24 @@
 [
     {
-        "name": "Default Theme",
+        "name": "BookMark",
         "fonts": [
             "Source Sans Pro",
             "Tinos",
+            "serif",
             "sans"
         ],
         "ui": "dark",
-        "folder": "themes/default-theme/"
+        "folder": "themes/bookmark/"
+    },
+    {
+        "name": "BookDark",
+        "fonts": [
+            "Source Sans Pro",
+            "Tinos",
+            "serif",
+            "sans"
+        ],
+        "ui": "light",
+        "folder": "themes/bookdark/"
     }
 ]

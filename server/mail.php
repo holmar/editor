@@ -18,7 +18,7 @@ $mail->addStringAttachment($attachment, $filename . '.txt');
 $mail->Subject = $subject;
 $mail->Body = $message;
 
-if(filter_var($address, FILTER_VALIDATE_EMAIL) && $mail->send()) {
+if (filter_var($address, FILTER_VALIDATE_EMAIL) && $mail->send()) {
     echo 'success';
 } else {
     echo 'error';

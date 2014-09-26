@@ -32,6 +32,7 @@ You don't know how to code? No problem! You can also just submit a theme design 
 - Make sure the theme is responsive.
 - Fonts can be added using the `@font-face` rule. When using _Google Fonts_, choose the `@import` option.
 - Prefix all selectors with `#mark` (preprocessors make this very easy).
+- Use `padding` in favor of `margin`, so that elements can still be clicked.
 - Additional resources (images, fonts etc.) are allowed.
 - It's recommended that you [lint your CSS](http://www.csslint.net).
 - If possible, use SVGs in favor of Retina images.
