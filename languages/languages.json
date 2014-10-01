@@ -7,7 +7,7 @@
     },
     {
         "name": "Deutsch",
-        "identifiers": ["de", "de-de"],
+        "identifiers": ["de", "de-de", "de-at", "de-ch"],
         "dictionary": "de_DE",
         "file": "languages/de.json"
     }

@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# v1.3.2
+# v1.3.3
 
 # Core files
 index.html
@@ -25,8 +25,8 @@ img/search_13x13.svg
 
 # Default language & theme
 languages/en.json
-themes/default-theme/theme.css
-themes/default-theme/preview.png
+themes/bookmark/theme.css
+themes/bookmark/preview.png
 
 NETWORK:
 *

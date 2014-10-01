@@ -366,8 +366,10 @@
                 + '<input type="hidden" name="filename" value="' + l18n('export-filename') + '">'
                 + '<input type="hidden" name="data-url" value="' + (dataURL || false) + '">'
                 + '</form>';
-
+            
+            document.body.appendChild(wrapper);
             wrapper.firstChild.submit();
+            document.body.removeChild(wrapper);
         }
     };
     
@@ -376,10 +378,10 @@
      * @param <String> format
      */
     fileExport = function (format) {
-        
+
         // save the text that was exported
         lastExport = Mark.getText();
-        
+
         switch (format) {
         case 'txt':
             fileDownload(lastExport, 'txt', 'text/plain');
@@ -561,6 +563,7 @@
         var themes = JSON.parse(data),
             i = navigator.onLine ? themes.length : 1,
             frag = document.createDocumentFragment(),
+            theme = document.createElement('link'),
             clickHandler = function () {
                 var that = this;
 
@@ -579,7 +582,19 @@
                 that.parentNode.getElementsByClassName('active-theme')[0].removeAttribute('class');
                 that.className = 'active-theme';
             },
-            theme = document.createElement('link'),
+            loadHandler = function () {
+                addClass(ui, 'ui-' + localStorage.themeUi);
+
+                // load the saveState, if there is one; else add a newline
+                if (localStorage.saveState && localStorage.saveState !== '<br>') {
+                    fileNew(localStorage.saveState);
+                } else {
+                    Mark.newline();
+                }
+
+                // only execute this once
+                theme.removeEventListener('load', loadHandler, false);
+            },
             item;
 
         // if no theme was saved yet or the client is offline, save the default theme (first theme in themes.json)
@@ -592,17 +607,9 @@
         theme.id = 'theme';
         theme.rel = 'stylesheet';
         theme.href = localStorage.themeFile;
-        theme.addEventListener('load', function () {
-            addClass(ui, 'ui-' + localStorage.themeUi);
-
-            // now load the saveState, if there is one; else add a newline
-            // this has to be done after the theme is loaded to avoid a flash of unstyled text
-            if (localStorage.saveState && localStorage.saveState !== '<br>') {
-                fileNew(localStorage.saveState);
-            } else {
-                Mark.newline();
-            }
-        }, false);
+        
+        // load the text after the theme is loaded to avoid a flash of unstyled text
+        theme.addEventListener('load', loadHandler, false);
 
         document.head.appendChild(theme);
 

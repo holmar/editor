@@ -231,11 +231,21 @@ var Mark = (function (marked, window, document) {
      */
     setRows = function (textarea) {
         textarea.rows = 1;
-
-        while (textarea.scrollHeight > textarea.offsetHeight) {
-            textarea.rows++;
+        
+        // force a repaint by changing the opacity (mostly for IE)
+        textarea.style.opacity = 0;
+        
+        var rows = textarea.rows,
+            scrollHeight = textarea.scrollHeight,
+            offsetHeight = textarea.offsetHeight;
+        
+        while (scrollHeight > offsetHeight * rows) {
+            rows++;
         }
-
+        
+        textarea.rows = rows;
+        textarea.style.opacity = 1;
+        
         return textarea;
     };
 
