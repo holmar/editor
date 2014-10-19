@@ -29,5 +29,13 @@
         ],
         "ui": "dark",
         "folder": "themes/telemark/"
+    },
+    {
+        "name": "Knochenmark",
+        "fonts": [
+            "Inconsolata"
+        ],
+        "ui": "dark",
+        "folder": "themes/knochenmark/"
     }
 ]
