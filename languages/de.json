@@ -15,7 +15,7 @@
     "feature-not-supported": "Dein Browser unterstützt diese Funktion leider nicht ...",
     "file-type-not-supported": "Dieses Dateiformat wird nicht unterstützt.",
     "format-html": "HTML (.html)",
-    "format-pdf": "PDF (.pdf) [beta]",
+    "format-pdf": "PDF (.pdf)",
     "format-png": "Bild (.png)",
     "format-txt": "Text-Datei (.txt)",
     "mail-address": "Email-Adresse",

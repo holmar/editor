@@ -135,7 +135,7 @@ var Mark = (function (marked, window, document) {
 
         // clicking on an image may result in an error upon calling getRangeAt() when rangeCount is undefined
         if (!sel.rangeCount) {
-            return false;
+            return {};
         }
 
         range = sel.getRangeAt(0);
@@ -235,11 +235,15 @@ var Mark = (function (marked, window, document) {
         // force a repaint by changing the opacity (mostly for IE)
         textarea.style.opacity = 0;
         
-        var rows = textarea.rows,
+        var rows = 1,
             scrollHeight = textarea.scrollHeight,
-            offsetHeight = textarea.offsetHeight;
-        
-        while (scrollHeight > offsetHeight * rows) {
+            offsetHeight = textarea.offsetHeight,
+            styles = window.getComputedStyle(textarea),
+            // only the first line includes padding and border-width, so those values have to be subtracted for the subsequent lines
+            lineHeight = offsetHeight - parseInt(styles.paddingTop, 10) - parseInt(styles.paddingBottom, 10) - parseInt(styles.borderTopWidth, 10) - parseInt(styles.borderBottomWidth, 10);
+                
+        while (scrollHeight > offsetHeight) {
+            offsetHeight += lineHeight;
             rows++;
         }
         
