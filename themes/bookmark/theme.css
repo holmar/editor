@@ -167,7 +167,7 @@
     counter-increment: c;
 }
 
-#mark ol li:after {
+#mark ol li:before {
     content: counter(c);
     display: block;
     width: 1.375rem;
