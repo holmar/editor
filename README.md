@@ -44,4 +44,5 @@ You can either submit your contributions to the [GitHub issue tracker](https://g
 ## Contributors
 
 - Martin Holler ([@holmar](https://github.com/holmar))
+- Christoph Mauerhofer ([@chphmh](https://github.com/chphmh))
 - **You?**

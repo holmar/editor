@@ -27,6 +27,7 @@
         getPDF,
         getSelectionRect,
         getNumbers,
+        getFileName,
         overlay,
         checkForChanges,
         fileDownload,
@@ -279,7 +280,7 @@
         doc.x = doc.margin;
         doc.y = doc.margin + doc.lineHeight;
         doc.setProperties({
-            title: l18n('export-filename'),
+            title: getFileName(),
             author: 'Mark',
             creator: 'Mark'
         });
@@ -347,6 +348,27 @@
                 return n !== '';
             }).length
         };
+    };
+    
+    /**
+     * getFileName() returns the content of the first headline – if there is one –, or a default filename in the current language
+     * @param <Boolean> sanitize (if true, the filename will be sanitized)
+     * @return <String>
+     */
+    getFileName = function (sanitize) {
+        var fileName;
+        
+        if (container.firstChild.tagName === 'H1' && container.firstChild.textContent) {
+            fileName = container.firstChild.textContent;
+            
+            if (sanitize) {
+                fileName = fileName.toLowerCase().replace(/\s/g, '-');
+            }
+        } else {
+            fileName = l18n('default-filename');
+        }
+        
+        return fileName;
     };
     
     /**
@@ -451,7 +473,7 @@
                 wrapper.href = 'data:' + mimeType +  ';charset=utf-8,' + encodeURIComponent(content);
             }
             
-            wrapper.download = l18n('export-filename') + '.' + extension;
+            wrapper.download = getFileName(true) + '.' + extension;
 
             document.body.appendChild(wrapper);
             wrapper.click();
@@ -463,7 +485,7 @@
                 + '<input type="hidden" name="content" value="' + content.replace(/"/g, '&quot;') + '">'
                 + '<input type="hidden" name="extension" value="' + extension + '">'
                 + '<input type="hidden" name="mime-type" value="' + mimeType + '">'
-                + '<input type="hidden" name="filename" value="' + l18n('export-filename') + '">'
+                + '<input type="hidden" name="filename" value="' + getFileName(true) + '">'
                 + '<input type="hidden" name="data-url" value="' + (dataURL || false) + '">'
                 + '</form>';
             
@@ -574,9 +596,10 @@
     /**
      * fileMail() calls a server-side script that sends the file's contents as a textfile to a given address
      * @param <String> address
+     * @param <String> subject (optional)
      * @param <String> message (optional)
      */
-    fileMail = function (address, message) {
+    fileMail = function (address, subject, message) {
         var request = new XMLHttpRequest();
         
         // this counts as an export
@@ -590,10 +613,10 @@
             }
         };
         request.send('address=' + address +
+                     '&subject=' + (encodeURIComponent(subject) || l18n('mail-default-subject')) +
                      '&message=' + (encodeURIComponent(message) || l18n('mail-default-message')) + '\n\n---\n' + l18n('mail-footnote') +
                      '&attachment=' + encodeURIComponent(lastExport) +
-                     '&subject=' + l18n('mail-subject') +
-                     '&filename=' + l18n('export-filename'));
+                     '&filename=' + getFileName(true));
     };
     
 
@@ -805,6 +828,8 @@
             case 'ui-mail':
                 overlay('<label class="font-caps" for="ui-mail-email">' + l18n('mail-address') + '</label>' +
                     '<input id="ui-mail-email" class="font-helvetica font-size-regular" type="email" value="' + (localStorage.email || '') + '">' +
+                    '<label class="font-caps" for="ui-mail-subject">' + l18n('mail-subject') + '</label>' +
+                    '<input id="ui-mail-subject" class="font-helvetica font-size-regular" type="email">' +
                     '<label class="font-caps" for="ui-mail-message">' + l18n('mail-text') + '</label>' +
                     '<textarea id="ui-mail-message" class="font-helvetica font-size-regular"></textarea>', [
                         {
@@ -824,7 +849,7 @@
                                 } else {
                                     removeClass(email, 'validation-error');
                                     localStorage.email = email.value;
-                                    fileMail(email.value, document.getElementById('ui-mail-message').value);
+                                    fileMail(email.value, document.getElementById('ui-mail-subject').value, document.getElementById('ui-mail-message').value);
                                 }
                             },
                             className: 'button--active'
@@ -857,15 +882,18 @@
                 }
                 break;
             }
-        } else {
+        } else if (hasClass(e.target, 'menu__sublist')) {
             
-            // sub-navigations
-            if (hasClass(e.target, 'menu__sublist')) {
-                addClass(e.target, 'menu__sublist--display');
-                addClass(e.target.parentNode, 'menu__list--display-sublist');
-            } else if (hasClass(e.target, 'menu__back')) {
-                removeClass(e.target.parentNode.parentNode, 'menu__sublist--display');
-                removeClass(e.target.parentNode.parentNode.parentNode, 'menu__list--display-sublist');
+            if (e.target.style.height) {
+                e.target.removeAttribute('style');
+            } else {
+                var activeMenu = this.querySelector('[style]');
+                
+                if (activeMenu) {
+                    activeMenu.removeAttribute('style');
+                }
+                
+                e.target.style.height = (e.target.lastElementChild.children.length + 1) * 52 + 'px';
             }
         }
     }, false);
@@ -1129,14 +1157,13 @@
         }, false);
 
         menuFile.addEventListener('mouseleave', function () {
-            var subnav = this.getElementsByClassName('menu__list--display-sublist')[0];
-
-            // if a sub-navigation is opened, close it
-            if (subnav) {
-                removeClass(subnav, 'menu__list--display-sublist');
-                removeClass(subnav.getElementsByClassName('menu__sublist--display')[0], 'menu__sublist--display');
+            var activeMenu = this.querySelector('[style]');
+                
+            // if there is an opened menu, close it
+            if (activeMenu) {
+                activeMenu.removeAttribute('style');
             }
-
+            
             removeClass(ui.parentNode, 'frame--show-file');
         }, false);
 
