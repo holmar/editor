@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# v1.3.3
+# v1.3.4
 
 # Core files
 index.html
@@ -7,13 +7,11 @@ css/styles.min.css
 js/mark.marked.min.js
 js/mark.min.js
 js/index.min.js
-js/html2canvas.min.js
 js/jspdf.min.js
 languages/languages.json
 themes/themes.json
 
 # Images
-img/arrow_8x12.svg
 img/arrows.png
 img/close_10x10.svg
 img/drag-drop.gif
