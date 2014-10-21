@@ -1,0 +1,224 @@
+/**
+ * Theme name: #knochenmark
+ * Designer: @chphmh
+ * Author: @chphmh
+ * Fonts: Inconsolata
+ * Version: 1.0
+ * Description: Bringing the *true* markdown style to light. ("Showing the bone marrow of a markdown text.")
+ */
+
+@import url(http://fonts.googleapis.com/css?family=Inconsolata:400);
+
+/* =Selection *************************************/
+#mark ::-moz-selection {
+    background-color: #666;
+    color: #fff;
+}
+
+#mark ::selection {
+    background-color: #666;
+    color: #fff;
+}
+
+/* =General *************************************/
+#mark {
+    background-color: #fff;
+    color: #000;
+    line-height: 1.8;
+    padding: 3rem 1.25rem 8rem;  /* from bookmark theme */
+}
+#mark::after {  /* hack because padding-bottom for #mark doesn't work?? */
+    content:"";
+    display: block;
+    height: 8rem;
+}
+
+#mark > * {
+    max-width: 60em;  /* width of text block */
+    margin: 0 auto;  /* is centered */
+    padding-bottom: 1.2em;
+}
+/* =Font *************************************/
+#mark,
+#mark pre,
+#mark code {
+    font-family: "Inconsolata", "Courier New", monospace;
+    font-size: 1em;
+}
+
+/* =Markdown elements *************************************/
+#mark * {
+    font-size: 1em;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: none;
+}
+#mark h1::before {
+    content: "# ";
+}
+#mark h2::before {
+    content: "## ";
+}
+#mark h3::before {
+    content: "### ";
+}
+#mark h4::before {
+    content: "#### ";
+}
+#mark h5::before {
+    content: "##### ";
+}
+#mark h6::before {
+    content: "###### ";
+}
+#mark pre {
+    padding-left: 2em;
+    /* wrap lines */
+    white-space: pre-wrap;       /* CSS 3 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+/*
+#mark pre::before {
+    content: "\00a0\00a0\00a0\00a0";
+}
+*/
+#mark code::before {
+    content: "`";
+}
+#mark code::after {
+    content: "`";
+}
+#mark pre code::before {
+    content: "";
+}
+#mark pre code::after {
+    content: "";
+}
+#mark blockquote p::before {
+    content: "> ";
+    display: inline;
+}
+#mark em::before {
+    content: "*";
+}
+#mark em::after {
+    content: "*";
+}
+#mark strong::before {
+    content: "**";
+}
+#mark strong::after {
+    content: "**";
+}
+#mark del::before {
+    content: "~~";
+}
+#mark del::after {
+    content: "~~";
+}
+#mark a,
+#mark a:link,
+#mark a:hover,
+#mark a:active,
+#mark a:focus,
+#mark a:visited {
+    color: inherit;
+}
+#mark a::before {
+    content: "[";
+}
+#mark a::after {
+    content: "](" attr(href) ")";
+}
+#mark a[title]::after {
+    content: "](" attr(href) " " attr(title) ")";
+}
+#mark hr {
+    color: #000;
+    margin-bottom: 1.2em;
+    padding-bottom: 1.2em;
+    visibility: hidden;
+}
+#mark hr::before {
+    content: "*****";
+    display: block;
+    margin-top: -0.4em;
+    visibility: visible;
+}
+#mark img {
+    max-width: 100%;
+}
+/* ::before/::after don't work on img in most browsers!
+#mark img {
+    display: inline;
+}
+#mark img::before {
+    content: "[";
+}
+#mark img::after {
+    content: attr(alt) "](" attr(src) ")";
+}
+*/
+#mark blockquote h1::before {
+    content: "> # ";
+}
+#mark blockquote h2::before {
+    content: "> ## ";
+}
+#mark blockquote h3::before {
+    content: "> ### ";
+}
+#mark blockquote h4::before {
+    content: "> #### ";
+}
+#mark blockquote h5::before {
+    content: "> ##### ";
+}
+#mark blockquote h6::before {
+    content: "> ###### ";
+}
+
+/* =Lists *************************************/
+#mark ul {
+    list-style-type: none;
+    padding-left: 2.0em;
+}
+#mark ul li::before {
+    content: "-";
+    margin-right: 0.5em;
+    margin-left: -1em;
+}
+#mark ul li {
+}
+#mark ul ul {
+    padding-left: 1em;
+}
+#mark ul li > p,
+#mark ol li > p,
+#mark ul li > blockquote,
+#mark ol li > blockquote,
+#mark ul li > pre,
+#mark ol li > pre {
+    padding-bottom: 1.2em;
+}
+#mark ul li > p:first-child {
+    display: inline-block;  /* prevent '-' being in a separate line */
+}
+#mark ol {
+    list-style-type: decimal;
+    padding-left: 2.5em;
+}
+#mark ol ol {
+    padding-left: 1.5em;
+}
+
+/* =Interface *************************************/
+#mark .editing {
+    font-family: "Inconsolata", "Courier New", monospace;
+    margin-bottom: 1.2em;
+    padding-bottom: 3px;
+    /*overflow: auto;*/ /* corresponding bug seems to be fixed */
+}

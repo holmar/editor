@@ -20,5 +20,22 @@
         ],
         "ui": "light",
         "folder": "themes/bookdark/"
+    },
+    {
+        "name": "TeleMark",
+        "fonts": [
+            "Open Sans",
+            "Inconsolata"
+        ],
+        "ui": "dark",
+        "folder": "themes/telemark/"
+    },
+    {
+        "name": "#knochenmark",
+        "fonts": [
+            "Inconsolata"
+        ],
+        "ui": "dark",
+        "folder": "themes/knochenmark/"
     }
 ]
