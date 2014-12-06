@@ -27,13 +27,18 @@
     font-family: "Open Sans", "Arial", sans-serif;
     font-size: 1.0em;
     line-height: 1.8;
-    padding: 3rem 1.25rem 8rem;  /* from bookmark */
 }
-#mark::after {  /* hack because padding-bottom for #mark doesn't work in Firefox, Opera & IE11 (works in Chrome)! */
-    content:"";
+#mark::before,
+#mark::after {
+    content: "";
     display: block;
+}
+#mark::before {
+    height: 3rem;
+}
+#mark::after {
     height: 8rem;
-}  /* (although this adds additional padding in Chrome, it isn't really bothering there) */
+}
 
 #mark > * {
     max-width: 50rem;  /* width of text block */

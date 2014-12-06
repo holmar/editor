@@ -25,11 +25,16 @@
     background-color: #fff;
     color: #000;
     line-height: 1.8;
-    padding: 3rem 1.25rem 8rem;  /* from bookmark theme */
 }
-#mark::after {  /* hack because padding-bottom for #mark doesn't work?? */
-    content:"";
+#mark::before,
+#mark::after {
+    content: "";
     display: block;
+}
+#mark::before {
+    height: 3rem;
+}
+#mark::after {
     height: 8rem;
 }
 

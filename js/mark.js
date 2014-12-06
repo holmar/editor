@@ -204,7 +204,7 @@ var Mark = (function (marked, window, document) {
         var i, result;
 
         // check if the supplied blocks are of the same type and are either <ul>, <ol> or <blockquote> elements
-        if (firstBlock.tagName === secondBlock.tagName && (firstBlock.tagName === 'UL' || firstBlock.tagName === 'OL' || firstBlock.tagName === 'BLOCKQUOTE')) {
+        if (firstBlock.tagName === secondBlock.tagName && (firstBlock.tagName === 'UL' || firstBlock.tagName === 'OL' || firstBlock.tagName === 'PRE' || firstBlock.tagName === 'BLOCKQUOTE')) {
 
             // move every element from `secondBlock` to `firstBlock`
             i = secondBlock.children.length;
@@ -296,16 +296,33 @@ var Mark = (function (marked, window, document) {
      * @return <Array> [ <HTMLElement>, ... ]
      */
     convert = function (text) {
-        var wrapper = document.createElement('div');
+        var wrapper = document.createElement('div'),
+            result = [],
+            len,
+            i;
 
-        wrapper.innerHTML = marked(text, { breaks: true, addRaw: true });
+        wrapper.innerHTML = marked(text, {
+            breaks: true,
+            sanitize: true,
+            addRaw: true
+        });
 
         // if nothing was converted, add an empty paragraph
         if (!wrapper.firstChild) {
             wrapper.innerHTML = '<p data-raw="<br>"><br></p>';
         }
-
-        return [].slice.call(wrapper.children);
+        
+        for (i = 0, len = wrapper.children.length; i < len; i++) {
+            
+            // replace break text with break elements
+            if (wrapper.children[i].textContent === '<br>') {
+                wrapper.children[i].innerHTML = '<br>';
+            }
+            
+            result.push(wrapper.children[i]);
+        }
+                
+        return result;
     };
 
     /**

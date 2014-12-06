@@ -26,7 +26,6 @@ Mark makes use of the following open source projects:
 
 - [marked](https://github.com/chjj/marked) – a Markdown parser by [@chjj](https://github.com/chjj)
 - [jsPDF](https://github.com/MrRio/jsPDF) – a client-side PDF generator by [@MrRio](https://github.com/MrRio)
-- [html2canvas](https://github.com/niklasvh/html2canvas) – an HTML renderer by [@niklasvh](https://github.com/niklasvh)
 - The [OpenOffice dictionaries](https://www.openoffice.org/lingucomponent/)
 - [Sinonimi](http://sinonimi.sourceforge.net/) – a PHP script to search for synonyms in the OpenOffice dictionaries
 - [PHPMailer](https://github.com/PHPMailer/PHPMailer) – a PHP class for sending mails

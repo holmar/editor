@@ -187,7 +187,7 @@ Lexer.prototype.token = function(src, top, bq) {
         text: !this.options.pedantic
           ? cap.replace(/\n+$/, '')
           : cap,
-        raw: '    ' + cap.replace(/"/g, '&quot;').replace(/\n+$/, '')
+        raw: '    ' + cap.replace(/"/g, '&quot;').replace(/\n+$/, '').replace(/\n/g, '\n    ')
       });
       continue;
     }
@@ -376,7 +376,8 @@ Lexer.prototype.token = function(src, top, bq) {
           ? 'paragraph'
           : 'html',
         pre: cap[1] === 'pre' || cap[1] === 'script' || cap[1] === 'style',
-        text: cap[0]
+        text: cap[0],
+        raw: cap[0].replace(/"/g, '&quot;').replace(/\n+$/, '')
       });
       continue;
     }

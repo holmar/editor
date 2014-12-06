@@ -138,7 +138,9 @@ button {
  * * * * * * * * * * */
 
 .mark {
-    padding: 20px;
+    /* add some space to allow the scrollbar to be used */
+    border-right: 25px solid transparent;
+    border-left: 25px solid transparent;
     cursor: none;
 }
 

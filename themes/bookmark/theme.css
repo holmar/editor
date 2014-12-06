@@ -20,12 +20,18 @@
 
 #mark {
     background-color: #fcfcfa;
-    padding: 6.25rem 1.25rem;
 }
 
 #mark > * {
     max-width: 40.625rem;
     margin: 0 auto;
+}
+
+#mark:before,
+#mark:after {
+    content: "";
+    display: block;
+    height: 6.25rem;
 }
 
 #mark h1,
