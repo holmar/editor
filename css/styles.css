@@ -454,6 +454,11 @@ button {
    color: #7c7777;
 }
 
+.clipboarddata {
+    position: absolute;
+    top: 0; left: -100%;
+}
+
 
 /* * * * * * * * * * * * * * *
  * OVERLAYS (MODAL & NOTICE) *

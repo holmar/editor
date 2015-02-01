@@ -16,12 +16,13 @@
         tooltip = document.getElementById('ui-tooltip'),
         mouseMoved = false,
         swipe = {},
+        clipboardDataContainer,
         get,
         removeDuplicates,
         hasClass,
         addClass,
         removeClass,
-        l18n,
+        i18n,
         setLanguage,
         writeToPDF,
         getPDF,
@@ -107,24 +108,24 @@
     }
     
     /**
-     * l18n() gets the translated text using the `languageData` object
+     * i18n() gets the translated text using the `languageData` object
      * @param <String> text
      * @return <String> || <undefined> (undefined when `text` was not found)
      */
-    l18n = function (text) {
+    i18n = function (text) {
         return languageData[text];
     };
     
     /**
-     * setLanguage() translates all elements that have a `l18n` data-attribute into the current language
+     * setLanguage() translates all elements that have a `i18n` data-attribute into the current language
      */
     setLanguage = function () {
-        var targets = ui.querySelectorAll('[data-l18n]'),
+        var targets = ui.querySelectorAll('[data-i18n]'),
             i = targets.length;
         
         while (i--) {
             if (targets[i].tagName === 'INPUT') {
-                targets[i].placeholder = l18n(targets[i].getAttribute('data-l18n'));
+                targets[i].placeholder = i18n(targets[i].getAttribute('data-i18n'));
             } else {
                 
                 // if there is already text, remove it
@@ -133,7 +134,7 @@
                 }
                 
                 // .textContent can't be used here, because it would remove nested elements
-                targets[i].insertBefore(document.createTextNode(l18n(targets[i].getAttribute('data-l18n'))), targets[i].firstChild);
+                targets[i].insertBefore(document.createTextNode(i18n(targets[i].getAttribute('data-i18n'))), targets[i].firstChild);
             }
         }
     };
@@ -365,7 +366,7 @@
                 fileName = fileName.toLowerCase().replace(/\s/g, '-');
             }
         } else {
-            fileName = l18n('default-filename');
+            fileName = i18n('default-filename');
         }
         
         return fileName;
@@ -549,7 +550,7 @@
         
         // quick feature check
         if (!FileReader) {
-            overlay(l18n('feature-not-supported'));
+            overlay(i18n('feature-not-supported'));
             return;
         }
                 
@@ -563,18 +564,18 @@
                 content = reader.result;
 
                 if (checkForChanges()) {
-                    overlay(l18n('delete-warning'), [
+                    overlay(i18n('delete-warning'), [
                         {
-                            text: l18n('delete-text'),
+                            text: i18n('delete-text'),
                             clickHandler: function () {
                                 fileNew(content);
                             }
                         },
                         {
-                            text: l18n('cancel')
+                            text: i18n('cancel')
                         },
                         {
-                            text: l18n('export-text'),
+                            text: i18n('export-text'),
                             clickHandler: function () {
                                 fileExport('txt');
                                 fileNew(content);
@@ -589,7 +590,7 @@
 
             reader.readAsText(file);
         } else {
-            overlay(l18n('file-type-not-supported'));
+            overlay(i18n('file-type-not-supported'));
         }
     };
     
@@ -609,12 +610,22 @@
         request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
         request.onload = function () {
             if (request.readyState === 4 && request.status === 200) {
-                overlay((request.responseText === 'success') ? l18n('mail-sent') : l18n('mail-error'));
+                switch (request.responseText) {
+                case 'on_cooldown':
+                    overlay(i18n('mail-on-cooldown'));
+                    break;
+                case 'error':
+                    overlay(i18n('mail-error'));
+                    break;
+                case 'success':
+                    overlay(i18n('mail-sent'));
+                    break;
+                }
             }
         };
         request.send('address=' + address +
-                     '&subject=' + (encodeURIComponent(subject) || l18n('mail-default-subject')) +
-                     '&message=' + (encodeURIComponent(message) || l18n('mail-default-message')) + '\n\n---\n' + l18n('mail-footnote') +
+                     '&subject=' + (encodeURIComponent(subject) || i18n('mail-default-subject')) +
+                     '&message=' + (encodeURIComponent(message) || i18n('mail-default-message')) + '\n\n---\n' + i18n('mail-footnote') +
                      '&attachment=' + encodeURIComponent(lastExport) +
                      '&filename=' + getFileName(true));
     };
@@ -802,18 +813,18 @@
                 break;
             case 'ui-new':
                 if (checkForChanges()) {
-                    overlay(l18n('delete-warning'), [
+                    overlay(i18n('delete-warning'), [
                         {
-                            text: l18n('delete-text'),
+                            text: i18n('delete-text'),
                             clickHandler: function () {
                                 fileNew();
                             }
                         },
                         {
-                            text: l18n('cancel')
+                            text: i18n('cancel')
                         },
                         {
-                            text: l18n('export-text'),
+                            text: i18n('export-text'),
                             clickHandler: function () {
                                 fileExport('txt');
                                 fileNew();
@@ -826,17 +837,17 @@
                 }
                 break;
             case 'ui-mail':
-                overlay('<label class="font-caps" for="ui-mail-email">' + l18n('mail-address') + '</label>' +
+                overlay('<label class="font-caps" for="ui-mail-email">' + i18n('mail-address') + '</label>' +
                     '<input id="ui-mail-email" class="font-helvetica font-size-regular" type="email" value="' + (localStorage.email || '') + '">' +
-                    '<label class="font-caps" for="ui-mail-subject">' + l18n('mail-subject') + '</label>' +
+                    '<label class="font-caps" for="ui-mail-subject">' + i18n('mail-subject') + '</label>' +
                     '<input id="ui-mail-subject" class="font-helvetica font-size-regular" type="email">' +
-                    '<label class="font-caps" for="ui-mail-message">' + l18n('mail-text') + '</label>' +
+                    '<label class="font-caps" for="ui-mail-message">' + i18n('mail-text') + '</label>' +
                     '<textarea id="ui-mail-message" class="font-helvetica font-size-regular"></textarea>', [
                         {
-                            text: l18n('cancel')
+                            text: i18n('cancel')
                         },
                         {
-                            text: l18n('send'),
+                            text: i18n('send'),
                             clickHandler: function (e) {
                                 var email = document.getElementById('ui-mail-email');
 
@@ -858,27 +869,27 @@
                 break;
             case 'ui-about':
                 if (checkForChanges()) {
-                    overlay(l18n('delete-warning'), [
+                    overlay(i18n('delete-warning'), [
                         {
-                            text: l18n('delete-text'),
+                            text: i18n('delete-text'),
                             clickHandler: function () {
-                                fileNew(l18n('about-text'));
+                                fileNew(i18n('about-text'));
                             }
                         },
                         {
-                            text: l18n('cancel')
+                            text: i18n('cancel')
                         },
                         {
-                            text: l18n('export-text'),
+                            text: i18n('export-text'),
                             clickHandler: function () {
                                 fileExport('txt');
-                                fileNew(l18n('about-text'));
+                                fileNew(i18n('about-text'));
                             },
                             className: 'button--active'
                         }
                     ]);
                 } else {
-                    fileNew(l18n('about-text'));
+                    fileNew(i18n('about-text'));
                 }
                 break;
             }
@@ -902,27 +913,27 @@
         removeClass(ui.parentNode, 'frame--show-themes');
         
         if (checkForChanges()) {
-            overlay(l18n('delete-warning'), [
+            overlay(i18n('delete-warning'), [
                 {
-                    text: l18n('delete-text'),
+                    text: i18n('delete-text'),
                     clickHandler: function () {
-                        fileNew(l18n('create-a-custom-theme-text'));
+                        fileNew(i18n('create-a-custom-theme-text'));
                     }
                 },
                 {
-                    text: l18n('cancel')
+                    text: i18n('cancel')
                 },
                 {
-                    text: l18n('export-text'),
+                    text: i18n('export-text'),
                     clickHandler: function () {
                         fileExport('txt');
-                        fileNew(l18n('create-a-custom-theme-text'));
+                        fileNew(i18n('create-a-custom-theme-text'));
                     },
                     className: 'button--active'
                 }
             ]);
         } else {
-            fileNew(l18n('create-a-custom-theme-text'));
+            fileNew(i18n('create-a-custom-theme-text'));
         }
     }, false);
     
@@ -1188,10 +1199,25 @@
                 mouseMoved = false;
             }, 1000);
         }, false);
+        
+        // prepare a textarea for clipboard usage
+        clipboardDataContainer = document.createElement('textarea');
+        clipboardDataContainer.id = 'ui-clipboarddata';
+        clipboardDataContainer.className = 'clipboarddata';
+        ui.appendChild(clipboardDataContainer);
 
         // add keyboard shortcuts
         document.addEventListener('keydown', function (e) {
             if (e.metaKey || e.ctrlKey) {
+                
+                if (e.target.tagName !== 'TEXTAREA' && e.target.tagName !== 'INPUT') {
+                    
+                    // fill the clipboarddata-textarea with the raw text
+                    clipboardDataContainer.value = Mark.getText();
+                    clipboardDataContainer.setSelectionRange(0, clipboardDataContainer.value.length);
+                    clipboardDataContainer.focus();
+                }
+                
                 switch (e.keyCode) {
                 case 69:
                     e.preventDefault();
@@ -1212,6 +1238,12 @@
                     e.preventDefault();
                     document.getElementById('ui-new').click();
                     break;
+                case 67:
+                    // CTRL/CMD + C: copy to clipboard (if no text is being edited)
+                    if (e.target === clipboardDataContainer) {
+                        overlay(i18n('saved-to-clipboard'));
+                    }
+                    break;
                 case 77:
                     // CTRL/CMD + M: mail file
                     e.preventDefault();
@@ -1220,10 +1252,16 @@
                 case 83:
                     // CTRL/CMD + S: show a notification
                     e.preventDefault();
-                    overlay(l18n('save-notification'));
+                    overlay(i18n('save-notification'));
                     break;
                 }
             }
         }, false);
+        
+        document.addEventListener('keyup', function (e) {
+            if (e.target === clipboardDataContainer) {
+                clipboardDataContainer.blur();
+            }
+        });
     }
 }(Mark, window, document));

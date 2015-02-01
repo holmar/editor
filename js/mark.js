@@ -273,7 +273,7 @@ var Mark = (function (marked, window, document) {
 
         if (after) {
             after.parentNode.insertBefore(textarea, after.nextSibling);
-        } else if (document.activeElement.tagName === 'TEXTAREA') {
+        } else if (document.activeElement.className === 'editing') {
             document.activeElement.parentNode.insertBefore(textarea, document.activeElement.nextSibling);
         } else {
             container.appendChild(textarea);
