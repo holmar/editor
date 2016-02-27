@@ -22,7 +22,7 @@
     "mail-default-subject": "Dein Text",
     "mail-error": "Beim Versenden der Email ist wohl was schief gegangen ... :(",
     "mail-footnote": "Gesendet mit Mark.",
-    "mail-on-cooldown": "Du kannst nur alle zwei Minuten ein Email versenden, sorry!",
+    "mail-on-cooldown": "Du kannst nur alle zwei Minuten eine Email versenden, sorry!",
     "mail-sent": "Die Email wurde erfolgreich versandt!",
     "mail-subject": "Betreff (optional)",
     "mail-text": "Text (optional)",
